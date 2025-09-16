@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  db:
+    container_name: warhammer_db
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: dbpass
+      POSTGRES_DB: local_pg_db
+    volumes:
+      - ./scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5434:5432"
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: pgadminpass
+    ports:
+      - "5050:80"
