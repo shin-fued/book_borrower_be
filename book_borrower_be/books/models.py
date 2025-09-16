@@ -1,4 +1,5 @@
 from django.db import models
+from Users.views import Users
 
 # Create your models here.
 class Books(models.Model):
@@ -8,3 +9,11 @@ class Books(models.Model):
   condition = models.CharField(max_length=50)
   genre = models.CharField(max_length=50)
   added_at = models.DateTimeField(auto_now_add=True)
+
+class Books_Users_Transactions(models.Model):
+    book = models.ForeignKey(Books)
+    user = models.ForeignKey(Users)
+    transaction_time = models.DateTimeField(auto_now_add=True)
+    transaction_type = models.CharField(max_length=50)  # e.g., 'borrow', 'return'
+    transaction_cost = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+

@@ -7,4 +7,7 @@ class Users(models.Model):
   role = models.CharField(max_length=50)
   created_at = models.DateTimeField(auto_now_add=True)
   
+
+class Meta:
+        ordering = ["username"]
   
