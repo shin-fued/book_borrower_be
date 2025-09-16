@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-c+k_36v7#v(kq!xk2c-rd2(0fvv$yq9ndw6rrst7jpussy#s$s'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -76,10 +76,15 @@ WSGI_APPLICATION = 'book_borrower_be.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'local_pg_db',
+        'USER': 'root',
+        'PASSWORD': 'dbpass',
+        'HOST': 'localhost',  # or 'db' if using docker-compose network
+        'PORT': '5432',
     }
 }
+
 
 
 # Password validation
