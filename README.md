@@ -1,10 +1,14 @@
 django webapp
 
+in case pip not found:
+    python get-pip.py
+
 run:
 
-    python -m venv book_borrower_venv
+    uv venv book_borrower_venv
+    python -m ensurepip --upgrade
     pip install -r requirements.txt
-    docker compsoe up -d
+    docker compose up -d
     python manage.py migrate
     python manage.py runserver
     

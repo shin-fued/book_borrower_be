@@ -10,3 +10,4 @@ class TransactionsSerialiser(serializers.ModelSerializer):
     class Meta:
         model = Books_Users_Transactions
         fields = ['id', 'book', 'user', 'transaction_time', 'transaction_type', 'transaction_cost']
+        

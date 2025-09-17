@@ -71,7 +71,7 @@ class UserViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({
-            "message": "User deleted successfully 🗑️"
+            "message": "User deleted successfully"
         }, status=status.HTTP_204_NO_CONTENT)
         
     #custom endpoint ie users/{id}/profile/
@@ -80,7 +80,7 @@ class UserViewSet(viewsets.ModelViewSet):
         user = self.get_object()
         return Response({
             "username": user.username,
-            "email": user.email,
+            "phone_number": user.phone_number,
             "status": "active"
         })
         
