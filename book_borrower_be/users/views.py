@@ -10,6 +10,7 @@ from rest_framework import viewsets
 class UserViewSet(viewsets.ModelViewSet):
     queryset = Users.objects.all()
     serializer_class = UserSerializer
+    lookup_field = 'username'
     
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

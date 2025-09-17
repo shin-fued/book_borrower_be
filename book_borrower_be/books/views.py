@@ -1,3 +1,4 @@
+from time import timezone
 from books.serializers import GenreBookSerializer, GenreSerializer
 from users.serializers import UserSerializer
 from .serializers import BookSerializer, TransactionsSerialiser, CategoryPriceSerializer
@@ -25,6 +26,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
         serializer = BookSerializer(books, many=True)
         return Response(serializer.data)
     
+    #check for borrow only
     @action(detail=True, methods=['get'], url_path='book-borrowers')
     def book_borrowers(self, request, pk=None):
         book = get_object_or_404(Books, pk=pk)
@@ -32,20 +34,48 @@ class TransactionViewSet(viewsets.ModelViewSet):
         serializer = UserSerializer(borrowers, many=True)
         return Response(serializer.data)
     
-    @action(detail=True, methods=['post'], url_path='borrow')
-    def borrow(self, request):
+    @action(detail=False, methods=['post'], url_path='borrow') #make transaction cost =  category price, make it so that one book can be borrowed once at a time
+    def borrow_book(self, request):
+        book_id = request.data.get('book')
+        user_id = request.data.get('user')
+        
+        book = get_object_or_404(Books, pk=book_id)
+        
+        active_borrow = BooksUsersTransactions.objects.filter(
+            book=book,
+            transaction_type='borrow'
+        ).exists()
+
+        if active_borrow:
+            return Response(
+                {"error": "This book is already borrowed."},
+                status=400
+            )
+            
+
+        price = book.category.price_per_day
+        
         serializer = TransactionsSerialiser(data=request.data)
         if serializer.is_valid():
-            serializer.save(transaction_type='borrow')
+            serializer.save(transaction_type='borrow', transaction_cost=price)
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
     
     
-    @action(detail=True,methods=['post'],url_path='return')
-    def borrow(self, request):
+    @action(detail=False,methods=['post'],url_path='return') #make the return transaction type calculated by days borrowed over 1
+    def return_book(self, request):
+        price = CategoryPrice.objects.get(category=request.data.get('category'))
+        last_borrowed = BooksUsersTransactions.objects.filter(
+            book_id=request.data.get('book'),
+            user_id=request.data.get('user'),
+            transaction_type='borrow'
+        ).order_by('-created_at').last()
+        if not last_borrowed:
+            return Response({"error": "No borrow record found for this book and user."}, status=400)
+        days_dued = (timezone.now().date() - last_borrowed.created_at.date()).days -1
         serializer = TransactionsSerialiser(data=request.data)
         if serializer.is_valid():
-            serializer.save(transaction_type='return')
+            serializer.save(transaction_type='return', transaction_cost=price.price_per_day*days_dued)
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
     

@@ -1,23 +1,11 @@
 from django.db import models
 from users.views import Users
 from django.utils.text import slugify
-from django.utils import timezone
 from django.core.validators import MinValueValidator
 
-# Create your models here.
+from base_models.models import BaseModel
 
-class BaseModel(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True) #make it update if you call put or patch
-    
-    class Meta:
-        abstract = True
-        
-    def save(self, *args, **kwargs):
-        if not self.pk:  # Only set created_at during the first save
-            self.created_at = timezone.now()
-        self.updated_at = timezone.now()  # Update updated_at on every save
-        super().save(*args, **kwargs)
+# Create your models here.
         
 class CategoryPrice(models.Model):
     category = models.CharField(max_length=50)
@@ -54,7 +42,7 @@ class GenreBook(models.Model):
 
 #make new model for stats etc
 
-class BooksUsersTransactions(models.Model):
+class BooksUsersTransactions(BaseModel):
     book = models.ForeignKey(Books, on_delete=models.DO_NOTHING, related_name='transactions')
     user = models.ForeignKey(Users, on_delete=models.DO_NOTHING, related_name='transactions')
     transaction_type = models.CharField(max_length=50)  # e.g., 'borrow', 'return'

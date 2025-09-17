@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'users',
     'books',
     'phonenumber_field',
+    'base_models',
+    'permissions'
 ]
 
 MIDDLEWARE = [

@@ -11,7 +11,7 @@ class BookSerializer(serializers.ModelSerializer):
     )
     class Meta:
         model = Books
-        fields = ['id', 'title', 'volume', 'condition', 'description', 'category', "genre", "slug", 'created_at', 'updated_at']
+        fields = ['id', 'title', 'volume', 'condition', 'description', 'category', "genre", "updated_at"]
         
     def create(self, validated_data):
         genre_names = validated_data.pop('genre', [])
@@ -25,9 +25,11 @@ class BookSerializer(serializers.ModelSerializer):
         
 
 class TransactionsSerialiser(serializers.ModelSerializer):
+    transaction_type = serializers.CharField(read_only=True)
+    transaction_cost = serializers.DecimalField(read_only=True, max_digits=6, decimal_places=2)
     class Meta:
         model = BooksUsersTransactions
-        fields = ['id', 'book', 'user', 'transaction_time', 'transaction_type', 'transaction_cost']
+        fields = ['id', 'book', 'user', 'updated_at', 'transaction_type', 'transaction_cost']
         
 class CategoryPriceSerializer(serializers.ModelSerializer):
     class Meta:
