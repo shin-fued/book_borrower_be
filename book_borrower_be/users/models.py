@@ -1,11 +1,14 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from phonenumber_field.modelfields import PhoneNumberField
+from django.utils.translation import gettext_lazy as _
 
-class Users(models.Model):
-  username = models.CharField(max_length=255, unique=True)
-  password = models.CharField(max_length=255)
-  phone_number = models.CharField(max_length=20, unique=True)
-  role = models.CharField(max_length=50)
-  created_at = models.DateTimeField(auto_now_add=True)
+class Users(AbstractUser):
+    # Add any additional fields if necessary
+    phone_number = PhoneNumberField(_("phone number"), unique=True)
+    role = models.CharField(max_length=50, default='borrower')  # e.g., 'admin', 'borrower'
+  
+#abstract model user use that
   
 
 class Meta:
