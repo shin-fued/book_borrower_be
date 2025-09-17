@@ -11,7 +11,7 @@ class BookSerializer(serializers.ModelSerializer):
     )
     class Meta:
         model = Books
-        fields = ['id', 'title', 'created_at', 'condition', 'description', 'category', "genre"]
+        fields = ['id', 'title', 'volume', 'condition', 'description', 'category', "genre", "slug", 'created_at', 'updated_at']
         
     def create(self, validated_data):
         genre_names = validated_data.pop('genre', [])
