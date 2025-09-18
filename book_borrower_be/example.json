@@ -1,0 +1,51 @@
+{
+    "books":[
+            {
+        "id": 1,
+        "title": "one punch man",
+        "volume": 1,
+        "condition": "new",
+        "description": "bald man fighting monsters",
+        "category": "manga"
+    },
+    {
+        "id": 2,
+        "title": "one punch man",
+        "volume": 2,
+        "condition": "new",
+        "description": "bald man fighting monsters",
+        "category": "manga"
+    },
+    {
+        "id": 3,
+        "title": "one piece",
+        "volume": 5,
+        "condition": "new",
+        "description": "pirate king dreams",
+        "category": "manga"
+    },
+    {
+        "id": 4,
+        "title": "one piece",
+        "volume": 5,
+        "condition": "new",
+        "description": "pirate king dreams",
+        "category": "manga"
+    },
+    {
+        "title": "frankenstein",
+        "volume": 3,
+        "condition": "new",
+        "description": "doctor ruins his life due to karma",
+        "category": "novel"
+    },
+    {
+        "id": 6,
+        "title": "elle",
+        "volume": 2,
+        "condition": "new",
+        "description": "beauty magazine",
+        "category": "novel"
+    }
+    ]
+}

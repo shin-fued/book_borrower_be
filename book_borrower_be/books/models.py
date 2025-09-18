@@ -5,15 +5,23 @@ from django.core.validators import MinValueValidator
 
 from base_models.models import BaseModel
 
+from book_borrower_be import books
+
+
 # Create your models here.
-        
+
+
 class CategoryPrice(models.Model):
     category = models.CharField(max_length=50)
-    price_per_day = models.DecimalField(max_digits=6, decimal_places=2,validators=[MinValueValidator(0.0)])  # e.g., 1.00 for standard, 1.50 for premium
-    
+    price_per_day = models.DecimalField(
+        max_digits=6, decimal_places=2, validators=[MinValueValidator(0.0)]
+    )  # e.g., 1.00 for standard, 1.50 for premium
+
+
 class Genre(models.Model):
     name = models.CharField(max_length=50)
-    
+
+
 class Books(BaseModel):
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=255)
@@ -22,7 +30,8 @@ class Books(BaseModel):
     slug = models.SlugField(max_length=60, unique=True, blank=True)
     category = models.ForeignKey(CategoryPrice, on_delete=models.CASCADE)
     volume = models.IntegerField(default=1)
-    def save(self, *args, **kwargs):
+
+    def save(self: books, *args: any, **kwargs: any) -> None:
         if not self.slug:  # only create slug on first save
             base_slug = f"{slugify(self.title)}-v{self.volume}"
             slug = base_slug
@@ -32,19 +41,29 @@ class Books(BaseModel):
                 counter += 1
             self.slug = slug
         super().save(*args, **kwargs)
-    
+
+
 class GenreBook(models.Model):
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
     book = models.ForeignKey(Books, on_delete=models.CASCADE)
-    
-    
-#make pricing based on something ie a new field such as type
 
-#make new model for stats etc
+
+# make pricing based on something ie a new field such as type
+
+# make new model for stats etc
+
 
 class BooksUsersTransactions(BaseModel):
-    book = models.ForeignKey(Books, on_delete=models.DO_NOTHING, related_name='transactions')
-    user = models.ForeignKey(Users, on_delete=models.DO_NOTHING, related_name='transactions')
-    transaction_type = models.CharField(max_length=50)  # e.g., 'borrow', 'return'
-    transaction_cost = models.DecimalField(max_digits=6, decimal_places=2)
+    class TransactionTypes(models.TextChoices):
+        BORROW = "borrow", "Borrow"
+        RETURN = "return", "Return"
 
+    book = models.ForeignKey(
+        Books, on_delete=models.DO_NOTHING, related_name="transactions"
+    )
+    user = models.ForeignKey(
+        Users, on_delete=models.DO_NOTHING, related_name="transactions"
+    )
+    transaction_type = models.transactionTypes.choices
+    transaction_cost = models.DecimalField(max_digits=6, decimal_places=2)
+    # no need resolved
