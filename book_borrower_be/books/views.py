@@ -1,7 +1,7 @@
-from time import timezone
+from django.utils import timezone
 from books.serializers import GenreBookSerializer, GenreSerializer
 from users.serializers import UserSerializer
-from .serializers import BookSerializer, TransactionsSerialiser, CategoryPriceSerializer
+from .serializers import BookOrderSerializer, BookSerializer, TransactionsSerialiser, CategoryPriceSerializer
 from .models import Books, BooksUsersTransactions, CategoryPrice, Genre, GenreBook
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -17,19 +17,18 @@ class BookViewSet(viewsets.ModelViewSet):
 
 class TransactionViewSet(viewsets.ModelViewSet):
     queryset = BooksUsersTransactions.objects.all()
-    serializerClass = TransactionsSerialiser
+    serializer_class = TransactionsSerialiser
     
-    @action(detail=True, methods=['get'], url_path='borrower-books')
-    def borrower_books(self, request, pk=None):
-        borrower = get_object_or_404(Users, pk=pk)
+    @action(detail=False, methods=['get'], url_path='borrower-books/(?P<username>[^/.]+)')
+    def borrower_books(self, request, username=None):
+        borrower = get_object_or_404(Users, username=username)
         books = Books.objects.filter(transactions__user=borrower)
         serializer = BookSerializer(books, many=True)
         return Response(serializer.data)
     
-    #check for borrow only
-    @action(detail=True, methods=['get'], url_path='book-borrowers')
-    def book_borrowers(self, request, pk=None):
-        book = get_object_or_404(Books, pk=pk)
+    @action(detail=False, methods=['get'], url_path='book-borrowers/(?P<slug>[^/.]+)')
+    def book_borrowers(self, request, slug=None):
+        book = get_object_or_404(Books, slug=slug)
         borrowers = Users.objects.filter(transactions__book=book)
         serializer = UserSerializer(borrowers, many=True)
         return Response(serializer.data)
@@ -37,14 +36,12 @@ class TransactionViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'], url_path='borrow') #make transaction cost =  category price, make it so that one book can be borrowed once at a time
     def borrow_book(self, request):
         book_id = request.data.get('book')
-        user_id = request.data.get('user')
         
         book = get_object_or_404(Books, pk=book_id)
         
-        active_borrow = BooksUsersTransactions.objects.filter(
-            book=book,
-            transaction_type='borrow'
-        ).exists()
+        active_borrow = (BooksUsersTransactions.objects.filter(
+            book_id=book_id,
+        ).order_by('-created_at').first().transaction_type == 'borrow')
 
         if active_borrow:
             return Response(
@@ -61,25 +58,39 @@ class TransactionViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
     
+    @action(
+        detail=False,
+        methods=['post'],
+        url_path='book-orders/(?P<transaction_type>[^/.]+)'
+    )
+    def create_book_order(self, request, transaction_type=None):
+        serializer = BookOrderSerializer(data=request.data, 
+                                         context={'transaction_type': transaction_type}
+                                         )
+        serializer.is_valid(raise_exception=True)
+        order = serializer.save()  # calls create()
+        return Response(order)
+    
     
     @action(detail=False,methods=['post'],url_path='return') #make the return transaction type calculated by days borrowed over 1
     def return_book(self, request):
-        price = CategoryPrice.objects.get(category=request.data.get('category'))
+        book_id = request.data.get('book')
         last_borrowed = BooksUsersTransactions.objects.filter(
-            book_id=request.data.get('book'),
-            user_id=request.data.get('user'),
-            transaction_type='borrow'
-        ).order_by('-created_at').last()
-        if not last_borrowed:
-            return Response({"error": "No borrow record found for this book and user."}, status=400)
-        days_dued = (timezone.now().date() - last_borrowed.created_at.date()).days -1
+            book_id=book_id,
+            user_id=request.data.get('user')
+        ).order_by('-created_at').first()
+        if not last_borrowed.transaction_type == 'borrow':
+            return Response({"error": "No recent borrow record found for this book and user."}, status=400)
+        book = get_object_or_404(Books, pk=book_id)
+        price = book.category.price_per_day
+        days_dued = (timezone.now().date() - last_borrowed.created_at.date()).days
+        days_dued = max(1, days_dued)
+        days_dued = int(days_dued)-1
         serializer = TransactionsSerialiser(data=request.data)
         if serializer.is_valid():
-            serializer.save(transaction_type='return', transaction_cost=price.price_per_day*days_dued)
+            serializer.save(transaction_type='return', transaction_cost=price*days_dued)
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
-    
-    #TODO: url_path = transactions/borrow and return make set type
     
 class CategoryPriceViewSet(viewsets.ModelViewSet):
     queryset = CategoryPrice.objects.all()
@@ -97,3 +108,4 @@ class GenreBookViewSet(viewsets.ModelViewSet):
 
 
 #query first then struct, annotation django from queries, seperate view class such as book store stats
+# think of how do i get order 
