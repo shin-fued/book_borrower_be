@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('books', '0004_categoryprice_genre_rename_added_at_books_created_at_and_more'),
+        ("books", "0004_categoryprice_genre_rename_added_at_books_created_at_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='books',
-            name='slug',
+            model_name="books",
+            name="slug",
             field=models.SlugField(blank=True, max_length=60, unique=True),
         ),
     ]

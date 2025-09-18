@@ -1,3 +1,6 @@
+from typing import Optional
+from urllib.request import Request
+from django.http import HttpRequest
 from django.utils import timezone
 from books.serializers import GenreBookSerializer, GenreSerializer
 from users.serializers import UserSerializer
@@ -28,14 +31,18 @@ class TransactionViewSet(viewsets.ModelViewSet):
     @action(
         detail=False, methods=["get"], url_path="borrower-books/(?P<username>[^/.]+)"
     )
-    def borrower_books(self, request, username=None):
+    def borrower_books(
+        self: "TransactionViewSet", request: Request, username: Optional[str] = None
+    ) -> Response:
         borrower = get_object_or_404(Users, username=username)
         books = Books.objects.filter(transactions__user=borrower)
         serializer = BookSerializer(books, many=True)
         return Response(serializer.data)
 
     @action(detail=False, methods=["get"], url_path="book-borrowers/(?P<slug>[^/.]+)")
-    def book_borrowers(self, request, slug=None):
+    def book_borrowers(
+        self: "TransactionViewSet", request: Request, slug: Optional[str] = None
+    ) -> Response:
         book = get_object_or_404(Books, slug=slug)
         borrowers = Users.objects.filter(transactions__book=book)
         serializer = UserSerializer(borrowers, many=True)
@@ -44,7 +51,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
     @action(
         detail=False, methods=["post"], url_path="borrow"
     )  # make transaction cost =  category price, make it so that one book can be borrowed once at a time
-    def borrow_book(self, request):
+    def borrow_book(self: "TransactionViewSet", request: Request) -> Response:
         book_id = request.data.get("book")
 
         book = get_object_or_404(Books, pk=book_id)
@@ -73,7 +80,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
     @action(
         detail=False, methods=["post"], url_path="return"
     )  # make the return transaction type calculated by days borrowed over 1
-    def return_book(self, request):
+    def return_book(self: "TransactionViewSet", request: Request) -> Response:
         book_id = request.data.get("book")
         last_borrowed = (
             BooksUsersTransactions.objects.filter(
@@ -109,7 +116,11 @@ class TransactionViewSet(viewsets.ModelViewSet):
         methods=["post"],
         url_path="book-orders/(?P<transaction_type>[^/.]+)",
     )
-    def create_book_order(self, request, transaction_type=None):
+    def create_book_order(
+        self: "TransactionViewSet",
+        request: Request,
+        transaction_type: Optional[str] = None,
+    ) -> Response:
         serializer = BookOrderSerializer(
             data=request.data, context={"transaction_type": transaction_type}
         )

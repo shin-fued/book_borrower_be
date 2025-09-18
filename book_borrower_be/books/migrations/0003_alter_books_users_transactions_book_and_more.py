@@ -7,25 +7,33 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('books', '0002_books_users_transactions'),
-        ('users', '0001_initial'),
+        ("books", "0002_books_users_transactions"),
+        ("users", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='books_users_transactions',
-            name='book',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='transactions', to='books.books'),
+            model_name="books_users_transactions",
+            name="book",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                related_name="transactions",
+                to="books.books",
+            ),
         ),
         migrations.AlterField(
-            model_name='books_users_transactions',
-            name='transaction_cost',
+            model_name="books_users_transactions",
+            name="transaction_cost",
             field=models.DecimalField(decimal_places=2, default=2.01, max_digits=6),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='books_users_transactions',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='transactions', to='users.users'),
+            model_name="books_users_transactions",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                related_name="transactions",
+                to="users.users",
+            ),
         ),
     ]

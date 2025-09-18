@@ -21,6 +21,7 @@
 # `scripts/generate.py` in https://github.com/pypa/get-pip.
 
 import sys
+from typing import Any
 
 this_python = sys.version_info[:2]
 min_version = (3, 9)
@@ -28,7 +29,9 @@ if this_python < min_version:
     message_parts = [
         "This script does not work on Python {}.{}.".format(*this_python),
         "The minimum supported Python version is {}.{}.".format(*min_version),
-        "Please use https://bootstrap.pypa.io/pip/{}.{}/get-pip.py instead.".format(*this_python),
+        "Please use https://bootstrap.pypa.io/pip/{}.{}/get-pip.py instead.".format(
+            *this_python
+        ),
     ]
     print("ERROR: " + " ".join(message_parts))
     sys.exit(1)
@@ -43,7 +46,7 @@ import importlib
 from base64 import b85decode
 
 
-def include_setuptools(args):
+def include_setuptools(args: Any) -> bool:
     """
     Install setuptools only if absent, not excluded and when using Python <3.12.
     """
@@ -54,7 +57,7 @@ def include_setuptools(args):
     return cli and env and absent and python_lt_3_12
 
 
-def include_wheel(args):
+def include_wheel(args: Any) -> bool:
     """
     Install wheel only if absent, not excluded and when using Python <3.12.
     """
@@ -65,7 +68,7 @@ def include_wheel(args):
     return cli and env and absent and python_lt_3_12
 
 
-def determine_pip_install_arguments():
+def determine_pip_install_arguments() -> list[str]:
     pre_parser = argparse.ArgumentParser()
     pre_parser.add_argument("--no-setuptools", action="store_true")
     pre_parser.add_argument("--no-wheel", action="store_true")
@@ -115,6 +118,7 @@ def bootstrap(tmpdir):
     # Execute the included pip and use it to install the latest pip and
     # any user-requested packages from PyPI.
     from pip._internal.cli.main import main as pip_entry_point
+
     args = determine_pip_install_arguments()
     sys.exit(pip_entry_point(args))
 

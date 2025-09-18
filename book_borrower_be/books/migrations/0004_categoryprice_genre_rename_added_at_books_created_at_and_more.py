@@ -9,70 +9,133 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('books', '0003_alter_books_users_transactions_book_and_more'),
+        ("books", "0003_alter_books_users_transactions_book_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CategoryPrice',
+            name="CategoryPrice",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('category', models.CharField(max_length=50)),
-                ('price_per_day', models.DecimalField(decimal_places=2, max_digits=4)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("category", models.CharField(max_length=50)),
+                ("price_per_day", models.DecimalField(decimal_places=2, max_digits=4)),
             ],
         ),
         migrations.CreateModel(
-            name='Genre',
+            name="Genre",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
             ],
         ),
         migrations.RenameField(
-            model_name='books',
-            old_name='added_at',
-            new_name='created_at',
+            model_name="books",
+            old_name="added_at",
+            new_name="created_at",
         ),
         migrations.RemoveField(
-            model_name='books',
-            name='price_per_day',
+            model_name="books",
+            name="price_per_day",
         ),
         migrations.AddField(
-            model_name='books',
-            name='updated_at',
+            model_name="books",
+            name="updated_at",
             field=models.DateTimeField(auto_now=True),
         ),
         migrations.AlterField(
-            model_name='books',
-            name='title',
+            model_name="books",
+            name="title",
             field=models.CharField(max_length=50),
         ),
         migrations.CreateModel(
-            name='BooksUsersTransactions',
+            name="BooksUsersTransactions",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('transaction_type', models.CharField(max_length=50)),
-                ('transaction_cost', models.DecimalField(decimal_places=2, max_digits=6)),
-                ('book', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='transactions', to='books.books')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='transactions', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("transaction_type", models.CharField(max_length=50)),
+                (
+                    "transaction_cost",
+                    models.DecimalField(decimal_places=2, max_digits=6),
+                ),
+                (
+                    "book",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="transactions",
+                        to="books.books",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="transactions",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='books',
-            name='category',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='books.categoryprice'),
+            model_name="books",
+            name="category",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="books.categoryprice",
+            ),
             preserve_default=False,
         ),
         migrations.CreateModel(
-            name='GenreBook',
+            name="GenreBook",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('book', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='books.books')),
-                ('genre', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='books.genre')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "book",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="books.books"
+                    ),
+                ),
+                (
+                    "genre",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="books.genre"
+                    ),
+                ),
             ],
         ),
         migrations.DeleteModel(
-            name='Books_Users_Transactions',
+            name="Books_Users_Transactions",
         ),
     ]

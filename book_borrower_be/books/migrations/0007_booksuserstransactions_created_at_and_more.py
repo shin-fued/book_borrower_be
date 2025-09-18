@@ -7,19 +7,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('books', '0006_books_volume_alter_categoryprice_price_per_day'),
+        ("books", "0006_books_volume_alter_categoryprice_price_per_day"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='booksuserstransactions',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
+            model_name="booksuserstransactions",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True, default=django.utils.timezone.now
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='booksuserstransactions',
-            name='updated_at',
+            model_name="booksuserstransactions",
+            name="updated_at",
             field=models.DateTimeField(auto_now=True),
         ),
     ]

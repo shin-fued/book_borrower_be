@@ -3,7 +3,13 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from django.utils import timezone
 from users.models import Users
-from .models import Books, BooksUsersTransactions, CategoryPrice, Genre, GenreBook
+from .models import (
+    Books,
+    BooksUsersTransactions,
+    CategoryPrice,
+    Genre,
+    GenreBook,
+)
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -26,7 +32,7 @@ class BookSerializer(serializers.ModelSerializer):
             "slug",
         ]
 
-    def create(self, validated_data):
+    def create(self: Books, validated_data: Books) -> Books:
         genre_names = validated_data.pop("genre", [])
         book = Books.objects.create(**validated_data)
 
@@ -86,7 +92,7 @@ class BookOrderSerializer(serializers.Serializer):
         max_digits=10, decimal_places=2, read_only=True
     )
 
-    def borrow_pricing(book, user_id):
+    def borrow_pricing(self: "BookOrderSerializer", book: Books, user_id: int) -> float:
         active_borrow = (
             BooksUsersTransactions.objects.filter(
                 book_id=book.id,
@@ -98,7 +104,7 @@ class BookOrderSerializer(serializers.Serializer):
             raise ValidationError(f"Book (id={book.id}) is already borrowed.")
         return book.category.price_per_day
 
-    def return_pricing(book, user_id) -> float:
+    def return_pricing(self: "BookOrderSerializer", book: Books, user_id: int) -> float:
         last_borrowed = (
             BooksUsersTransactions.objects.filter(book_id=book.id, user_id=user_id)
             .order_by("-created_at")
@@ -114,34 +120,35 @@ class BookOrderSerializer(serializers.Serializer):
         days_dued = int(days_dued) - 1
         return price * days_dued
 
-    # precommit
+    # one loop to both validate and get price
     def validate_books(
-        self, books
-    ):  # gets called before create update, validatebefore create, if test create
-        if not value:
+        self: "BookOrderSerializer", books_data: list[dict[str, any]]
+    ) -> list[dict[str, any]]:
+        if not books_data:
             raise serializers.ValidationError("At least one book must be provided.")
-        return value
+        return books_data
 
-    def create(self, validated_data):
-        username = validated_data["username"]
-        user = get_object_or_404(Users, username=username)
-        transaction_type = self.context.get("transaction_type")
+    def create(
+        self: "BookOrderSerializer", validated_data: dict[str, any]
+    ) -> dict[str, any]:
+        username: str = validated_data["username"]
+        user: Users = get_object_or_404(Users, username=username)
+        transaction_type: str = self.context.get("transaction_type", "borrow")
 
-        books_data = validated_data["books"]
-        transactions = []
-        total_cost = 0
+        books_data: list[dict[str, any]] = validated_data["books"]
+        transactions: list[BooksUsersTransactions] = []
+        total_cost: float = 0.0
 
-        if transaction_type == "return":
-            transaction_pricing = return_pricing  # TODO call this
-        else:
-            transaction_pricing = borrow_pricing
+        transaction_pricing = (
+            self.return_pricing if transaction_type == "return" else self.borrow_pricing
+        )
 
         for book_data in books_data:
-            book_id = book_data["book_id"]
-            book = get_object_or_404(Books, pk=book_id)
-            price = transaction_pricing(book, user.id)
+            book_id: int = book_data["book_id"]
+            book: Books = get_object_or_404(Books, pk=book_id)
+            price: float = transaction_pricing(book, user.id)
 
-            txn = BooksUsersTransactions.objects.create(
+            txn: BooksUsersTransactions = BooksUsersTransactions.objects.create(
                 book_id=book_id,
                 user_id=user.id,
                 transaction_type=transaction_type,

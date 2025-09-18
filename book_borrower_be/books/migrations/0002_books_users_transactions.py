@@ -7,20 +7,43 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('books', '0001_initial'),
-        ('users', '0001_initial'),
+        ("books", "0001_initial"),
+        ("users", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Books_Users_Transactions',
+            name="Books_Users_Transactions",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('transaction_time', models.DateTimeField(auto_now_add=True)),
-                ('transaction_type', models.CharField(max_length=50)),
-                ('transaction_cost', models.DecimalField(blank=True, decimal_places=2, max_digits=6, null=True)),
-                ('book', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='books.books')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='users.users')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("transaction_time", models.DateTimeField(auto_now_add=True)),
+                ("transaction_type", models.CharField(max_length=50)),
+                (
+                    "transaction_cost",
+                    models.DecimalField(
+                        blank=True, decimal_places=2, max_digits=6, null=True
+                    ),
+                ),
+                (
+                    "book",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING, to="books.books"
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING, to="users.users"
+                    ),
+                ),
             ],
         ),
     ]
