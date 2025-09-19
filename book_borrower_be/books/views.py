@@ -24,7 +24,7 @@ class BookViewSet(viewsets.ModelViewSet):
     serializer_class = BookSerializer
     lookup_field = "slug"
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ["category", "title"]
+    filterset_fields = ["category", "title", "author"]
 
 
 class TransactionViewSet(viewsets.ModelViewSet):

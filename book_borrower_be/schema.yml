@@ -3,9 +3,71 @@ info:
   title: ''
   version: 0.0.0
 paths:
-  /books/:
+  /analytics/analytics/:
     get:
-      operationId: books_list
+      operationId: analytics_analytics_list
+      tags:
+      - analytics
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Analytics'
+          description: ''
+  /analytics/book-popularity/{id}/:
+    get:
+      operationId: analytics_book_popularity_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - analytics
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookPopularity'
+          description: ''
+  /analytics/user-activity/{id}/:
+    get:
+      operationId: analytics_user_activity_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - analytics
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserActivity'
+          description: ''
+  /books/books/:
+    get:
+      operationId: books_books_list
       parameters:
       - in: query
         name: category
@@ -17,6 +79,10 @@ paths:
         description: A page number within the paginated result set.
         schema:
           type: integer
+      - in: query
+        name: title
+        schema:
+          type: string
       tags:
       - books
       security:
@@ -31,7 +97,7 @@ paths:
                 $ref: '#/components/schemas/PaginatedBookList'
           description: ''
     post:
-      operationId: books_create
+      operationId: books_books_create
       tags:
       - books
       requestBody:
@@ -57,9 +123,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Book'
           description: ''
-  /books/{slug}/:
+  /books/books/{slug}/:
     get:
-      operationId: books_retrieve
+      operationId: books_books_retrieve
       parameters:
       - in: path
         name: slug
@@ -80,7 +146,7 @@ paths:
                 $ref: '#/components/schemas/Book'
           description: ''
     put:
-      operationId: books_update
+      operationId: books_books_update
       parameters:
       - in: path
         name: slug
@@ -113,7 +179,7 @@ paths:
                 $ref: '#/components/schemas/Book'
           description: ''
     patch:
-      operationId: books_partial_update
+      operationId: books_books_partial_update
       parameters:
       - in: path
         name: slug
@@ -145,7 +211,7 @@ paths:
                 $ref: '#/components/schemas/Book'
           description: ''
     delete:
-      operationId: books_destroy
+      operationId: books_books_destroy
       parameters:
       - in: path
         name: slug
@@ -161,9 +227,9 @@ paths:
       responses:
         '204':
           description: No response body
-  /category-price/:
+  /books/category-price/:
     get:
-      operationId: category_price_list
+      operationId: books_category_price_list
       parameters:
       - name: page
         required: false
@@ -172,7 +238,7 @@ paths:
         schema:
           type: integer
       tags:
-      - category-price
+      - books
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -185,9 +251,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedCategoryPriceList'
           description: ''
     post:
-      operationId: category_price_create
+      operationId: books_category_price_create
       tags:
-      - category-price
+      - books
       requestBody:
         content:
           application/json:
@@ -211,9 +277,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/CategoryPrice'
           description: ''
-  /category-price/{id}/:
+  /books/category-price/{id}/:
     get:
-      operationId: category_price_retrieve
+      operationId: books_category_price_retrieve
       parameters:
       - in: path
         name: id
@@ -222,7 +288,7 @@ paths:
         description: A unique integer value identifying this category price.
         required: true
       tags:
-      - category-price
+      - books
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -235,7 +301,7 @@ paths:
                 $ref: '#/components/schemas/CategoryPrice'
           description: ''
     put:
-      operationId: category_price_update
+      operationId: books_category_price_update
       parameters:
       - in: path
         name: id
@@ -244,7 +310,7 @@ paths:
         description: A unique integer value identifying this category price.
         required: true
       tags:
-      - category-price
+      - books
       requestBody:
         content:
           application/json:
@@ -269,7 +335,7 @@ paths:
                 $ref: '#/components/schemas/CategoryPrice'
           description: ''
     patch:
-      operationId: category_price_partial_update
+      operationId: books_category_price_partial_update
       parameters:
       - in: path
         name: id
@@ -278,7 +344,7 @@ paths:
         description: A unique integer value identifying this category price.
         required: true
       tags:
-      - category-price
+      - books
       requestBody:
         content:
           application/json:
@@ -302,7 +368,7 @@ paths:
                 $ref: '#/components/schemas/CategoryPrice'
           description: ''
     delete:
-      operationId: category_price_destroy
+      operationId: books_category_price_destroy
       parameters:
       - in: path
         name: id
@@ -311,7 +377,7 @@ paths:
         description: A unique integer value identifying this category price.
         required: true
       tags:
-      - category-price
+      - books
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -319,9 +385,9 @@ paths:
       responses:
         '204':
           description: No response body
-  /genre/:
+  /books/genre/:
     get:
-      operationId: genre_list
+      operationId: books_genre_list
       parameters:
       - name: page
         required: false
@@ -330,7 +396,7 @@ paths:
         schema:
           type: integer
       tags:
-      - genre
+      - books
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -343,9 +409,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedGenreList'
           description: ''
     post:
-      operationId: genre_create
+      operationId: books_genre_create
       tags:
-      - genre
+      - books
       requestBody:
         content:
           application/json:
@@ -369,9 +435,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Genre'
           description: ''
-  /genre-book/:
+  /books/genre-book/:
     get:
-      operationId: genre_book_list
+      operationId: books_genre_book_list
       parameters:
       - name: page
         required: false
@@ -380,7 +446,7 @@ paths:
         schema:
           type: integer
       tags:
-      - genre-book
+      - books
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -393,9 +459,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedGenreBookList'
           description: ''
     post:
-      operationId: genre_book_create
+      operationId: books_genre_book_create
       tags:
-      - genre-book
+      - books
       requestBody:
         content:
           application/json:
@@ -419,9 +485,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/GenreBook'
           description: ''
-  /genre-book/{id}/:
+  /books/genre-book/{id}/:
     get:
-      operationId: genre_book_retrieve
+      operationId: books_genre_book_retrieve
       parameters:
       - in: path
         name: id
@@ -430,7 +496,7 @@ paths:
         description: A unique integer value identifying this genre book.
         required: true
       tags:
-      - genre-book
+      - books
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -443,7 +509,7 @@ paths:
                 $ref: '#/components/schemas/GenreBook'
           description: ''
     put:
-      operationId: genre_book_update
+      operationId: books_genre_book_update
       parameters:
       - in: path
         name: id
@@ -452,7 +518,7 @@ paths:
         description: A unique integer value identifying this genre book.
         required: true
       tags:
-      - genre-book
+      - books
       requestBody:
         content:
           application/json:
@@ -477,7 +543,7 @@ paths:
                 $ref: '#/components/schemas/GenreBook'
           description: ''
     patch:
-      operationId: genre_book_partial_update
+      operationId: books_genre_book_partial_update
       parameters:
       - in: path
         name: id
@@ -486,7 +552,7 @@ paths:
         description: A unique integer value identifying this genre book.
         required: true
       tags:
-      - genre-book
+      - books
       requestBody:
         content:
           application/json:
@@ -510,7 +576,7 @@ paths:
                 $ref: '#/components/schemas/GenreBook'
           description: ''
     delete:
-      operationId: genre_book_destroy
+      operationId: books_genre_book_destroy
       parameters:
       - in: path
         name: id
@@ -519,7 +585,7 @@ paths:
         description: A unique integer value identifying this genre book.
         required: true
       tags:
-      - genre-book
+      - books
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -527,9 +593,9 @@ paths:
       responses:
         '204':
           description: No response body
-  /genre/{id}/:
+  /books/genre/{id}/:
     get:
-      operationId: genre_retrieve
+      operationId: books_genre_retrieve
       parameters:
       - in: path
         name: id
@@ -538,7 +604,7 @@ paths:
         description: A unique integer value identifying this genre.
         required: true
       tags:
-      - genre
+      - books
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -551,7 +617,7 @@ paths:
                 $ref: '#/components/schemas/Genre'
           description: ''
     put:
-      operationId: genre_update
+      operationId: books_genre_update
       parameters:
       - in: path
         name: id
@@ -560,7 +626,7 @@ paths:
         description: A unique integer value identifying this genre.
         required: true
       tags:
-      - genre
+      - books
       requestBody:
         content:
           application/json:
@@ -585,7 +651,7 @@ paths:
                 $ref: '#/components/schemas/Genre'
           description: ''
     patch:
-      operationId: genre_partial_update
+      operationId: books_genre_partial_update
       parameters:
       - in: path
         name: id
@@ -594,7 +660,7 @@ paths:
         description: A unique integer value identifying this genre.
         required: true
       tags:
-      - genre
+      - books
       requestBody:
         content:
           application/json:
@@ -618,7 +684,7 @@ paths:
                 $ref: '#/components/schemas/Genre'
           description: ''
     delete:
-      operationId: genre_destroy
+      operationId: books_genre_destroy
       parameters:
       - in: path
         name: id
@@ -627,7 +693,7 @@ paths:
         description: A unique integer value identifying this genre.
         required: true
       tags:
-      - genre
+      - books
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -635,9 +701,9 @@ paths:
       responses:
         '204':
           description: No response body
-  /transactions/:
+  /books/transactions/:
     get:
-      operationId: transactions_list
+      operationId: books_transactions_list
       parameters:
       - name: page
         required: false
@@ -656,7 +722,7 @@ paths:
           * `borrow` - Borrow
           * `return` - Return
       tags:
-      - transactions
+      - books
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -669,9 +735,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedTransactionsSerialiserList'
           description: ''
     post:
-      operationId: transactions_create
+      operationId: books_transactions_create
       tags:
-      - transactions
+      - books
       requestBody:
         content:
           application/json:
@@ -695,9 +761,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/TransactionsSerialiser'
           description: ''
-  /transactions/{id}/:
+  /books/transactions/{id}/:
     get:
-      operationId: transactions_retrieve
+      operationId: books_transactions_retrieve
       parameters:
       - in: path
         name: id
@@ -706,7 +772,7 @@ paths:
         description: A unique integer value identifying this books users transactions.
         required: true
       tags:
-      - transactions
+      - books
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -719,7 +785,7 @@ paths:
                 $ref: '#/components/schemas/TransactionsSerialiser'
           description: ''
     put:
-      operationId: transactions_update
+      operationId: books_transactions_update
       parameters:
       - in: path
         name: id
@@ -728,7 +794,7 @@ paths:
         description: A unique integer value identifying this books users transactions.
         required: true
       tags:
-      - transactions
+      - books
       requestBody:
         content:
           application/json:
@@ -753,7 +819,7 @@ paths:
                 $ref: '#/components/schemas/TransactionsSerialiser'
           description: ''
     patch:
-      operationId: transactions_partial_update
+      operationId: books_transactions_partial_update
       parameters:
       - in: path
         name: id
@@ -762,7 +828,7 @@ paths:
         description: A unique integer value identifying this books users transactions.
         required: true
       tags:
-      - transactions
+      - books
       requestBody:
         content:
           application/json:
@@ -786,7 +852,7 @@ paths:
                 $ref: '#/components/schemas/TransactionsSerialiser'
           description: ''
     delete:
-      operationId: transactions_destroy
+      operationId: books_transactions_destroy
       parameters:
       - in: path
         name: id
@@ -795,7 +861,7 @@ paths:
         description: A unique integer value identifying this books users transactions.
         required: true
       tags:
-      - transactions
+      - books
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -803,9 +869,9 @@ paths:
       responses:
         '204':
           description: No response body
-  /transactions/book-borrowers/{slug}/:
+  /books/transactions/book-borrowers/{slug}/:
     get:
-      operationId: transactions_book_borrowers_retrieve
+      operationId: books_transactions_book_borrowers_retrieve
       parameters:
       - in: path
         name: slug
@@ -813,7 +879,7 @@ paths:
           type: string
         required: true
       tags:
-      - transactions
+      - books
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -825,9 +891,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/TransactionsSerialiser'
           description: ''
-  /transactions/book-orders/{transaction_type}/:
+  /books/transactions/book-orders/{transaction_type}/:
     post:
-      operationId: transactions_book_orders_create
+      operationId: books_transactions_book_orders_create
       parameters:
       - in: path
         name: transaction_type
@@ -841,7 +907,7 @@ paths:
             * `return` - Return
         required: true
       tags:
-      - transactions
+      - books
       requestBody:
         content:
           application/json:
@@ -865,11 +931,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/TransactionsSerialiser'
           description: ''
-  /transactions/borrow/:
+  /books/transactions/borrow/:
     post:
-      operationId: transactions_borrow_create
+      operationId: books_transactions_borrow_create
       tags:
-      - transactions
+      - books
       requestBody:
         content:
           application/json:
@@ -893,9 +959,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/TransactionsSerialiser'
           description: ''
-  /transactions/borrower-books/{username}/:
+  /books/transactions/borrower-books/{username}/:
     get:
-      operationId: transactions_borrower_books_retrieve
+      operationId: books_transactions_borrower_books_retrieve
       parameters:
       - in: path
         name: username
@@ -903,7 +969,7 @@ paths:
           type: string
         required: true
       tags:
-      - transactions
+      - books
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -915,11 +981,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/TransactionsSerialiser'
           description: ''
-  /transactions/return/:
+  /books/transactions/return/:
     post:
-      operationId: transactions_return_create
+      operationId: books_transactions_return_create
       tags:
-      - transactions
+      - books
       requestBody:
         content:
           application/json:
@@ -943,9 +1009,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/TransactionsSerialiser'
           description: ''
-  /users/:
+  /users/users/:
     get:
-      operationId: users_list
+      operationId: users_users_list
       parameters:
       - name: page
         required: false
@@ -967,7 +1033,7 @@ paths:
                 $ref: '#/components/schemas/PaginatedUserList'
           description: ''
     post:
-      operationId: users_create
+      operationId: users_users_create
       tags:
       - users
       requestBody:
@@ -993,9 +1059,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: ''
-  /users/{username}/:
+  /users/users/{username}/:
     get:
-      operationId: users_retrieve
+      operationId: users_users_retrieve
       parameters:
       - in: path
         name: username
@@ -1018,7 +1084,7 @@ paths:
                 $ref: '#/components/schemas/User'
           description: ''
     put:
-      operationId: users_update
+      operationId: users_users_update
       parameters:
       - in: path
         name: username
@@ -1053,7 +1119,7 @@ paths:
                 $ref: '#/components/schemas/User'
           description: ''
     patch:
-      operationId: users_partial_update
+      operationId: users_users_partial_update
       parameters:
       - in: path
         name: username
@@ -1087,7 +1153,7 @@ paths:
                 $ref: '#/components/schemas/User'
           description: ''
     delete:
-      operationId: users_destroy
+      operationId: users_users_destroy
       parameters:
       - in: path
         name: username
@@ -1105,9 +1171,9 @@ paths:
       responses:
         '204':
           description: No response body
-  /users/{username}/profile/:
+  /users/users/{username}/profile/:
     get:
-      operationId: users_profile_retrieve
+      operationId: users_users_profile_retrieve
       parameters:
       - in: path
         name: username
@@ -1131,6 +1197,32 @@ paths:
           description: ''
 components:
   schemas:
+    Analytics:
+      type: object
+      properties:
+        total_books:
+          type: integer
+        total_users:
+          type: integer
+        total_transactions:
+          type: integer
+        total_revenue:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        top_books:
+          type: array
+          items:
+            type: string
+        avg_borrow_days:
+          type: string
+      required:
+      - avg_borrow_days
+      - top_books
+      - total_books
+      - total_revenue
+      - total_transactions
+      - total_users
     Book:
       type: object
       properties:
@@ -1173,6 +1265,25 @@ components:
       - id
       - title
       - updated_at
+    BookPopularity:
+      type: object
+      properties:
+        book_id:
+          type: integer
+        title:
+          type: string
+        borrow_count:
+          type: integer
+        return_count:
+          type: integer
+        current_borrowers:
+          type: string
+      required:
+      - book_id
+      - borrow_count
+      - current_borrowers
+      - return_count
+      - title
     CategoryEnum:
       enum:
       - manga
@@ -1533,6 +1644,22 @@ components:
       - created_at
       - id
       - phone_number
+      - username
+    UserActivity:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        username:
+          type: string
+        total_borrows:
+          type: integer
+        total_returns:
+          type: integer
+      required:
+      - total_borrows
+      - total_returns
+      - user_id
       - username
   securitySchemes:
     basicAuth:

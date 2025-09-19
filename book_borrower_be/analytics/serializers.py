@@ -15,7 +15,6 @@ class UserActivitySerializer(serializers.Serializer):
     username = serializers.CharField()
     total_borrows = serializers.IntegerField()
     total_returns = serializers.IntegerField()
-    last_active = serializers.DateTimeField()
 
 
 class BookPopularitySerializer(serializers.Serializer):
@@ -23,4 +22,4 @@ class BookPopularitySerializer(serializers.Serializer):
     title = serializers.CharField()
     borrow_count = serializers.IntegerField()
     return_count = serializers.IntegerField()
-    current_borrowers = serializers.IntegerField()
+    current_borrowers = serializers.CharField()

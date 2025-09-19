@@ -21,4 +21,5 @@ urlpatterns = [
     path("users/", include("users.urls")),
     path("books/", include("books.urls")),
     path("analytics/", include("analytics.urls")),
+    path("permissions/", include("permissions.urls")),
 ]

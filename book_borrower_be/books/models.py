@@ -35,8 +35,8 @@ class Genre(models.Model):
 class Books(BaseModel):
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=255)
+    author = models.CharField(max_length=50)
     condition = models.CharField(max_length=50)
-    genre = models.CharField(max_length=50)
     slug = models.SlugField(max_length=60, unique=True, blank=True)
     category = models.ForeignKey(CategoryPrice, on_delete=models.CASCADE)
     volume = models.IntegerField(default=1)

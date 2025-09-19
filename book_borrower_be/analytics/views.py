@@ -1,4 +1,5 @@
 from itertools import count
+from typing import Optional
 from urllib.request import Request
 from rest_framework import viewsets
 from django.db.models import Sum
@@ -82,8 +83,59 @@ class AnalyticsViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
 
-# class UserActivityViewSet(viewsets.ViewSet):
-#     serializer_class = UserActivitySerializer
+class UserActivityViewSet(viewsets.ViewSet):
+    serializer_class = UserActivitySerializer
 
-# class BookPopularityViewSet(viewsets.ViewSet):
-#     serializer_class = BookPopularitySerializer
+    def retrieve(
+        self: "UserActivityViewSet",
+        request: Request,
+        pk: Optional[str] = None,
+        *args: object,
+        **kwargs: object
+    ) -> Response:
+        user = Users.objects.get(username=pk)
+        transactions = BooksUsersTransactions.objects.filter(user_id=user.id)
+        total_borrows = transactions.filter(transaction_type="borrow").count()
+        total_returns = transactions.filter(transaction_type="return").count()
+
+        data = {
+            "user_id": user.id,
+            "username": user.username,
+            "total_borrows": total_borrows,
+            "total_returns": total_returns,
+        }
+        serializer = self.serializer_class(instance=data)
+        return Response(serializer.data)
+
+
+class BookPopularityViewSet(viewsets.ViewSet):
+    serializer_class = BookPopularitySerializer
+
+    def retrieve(
+        self: "BookPopularityViewSet",
+        request: Request,
+        pk: Optional[str] = None,
+        *args: object,
+        **kwargs: object
+    ) -> Response:
+        book = Books.objects.get(slug=pk)
+        transactions = BooksUsersTransactions.objects.filter(book_id=book.id)
+        borrow_count = transactions.filter(transaction_type="borrow").count()
+        return_count = transactions.filter(transaction_type="return").count()
+
+        current_borrower = "No current borrower"
+        for t in transactions:
+            if t.transaction_type == "borrow":
+                current_borrower = Users.objects.get(id=t.user_id).username
+            elif t.transaction_type == "return":
+                current_borrower = "No current borrower"
+
+        data = {
+            "book_id": book.id,
+            "title": book.title,
+            "borrow_count": borrow_count,
+            "return_count": return_count,
+            "current_borrowers": current_borrower,
+        }
+        serializer = self.serializer_class(instance=data)
+        return Response(serializer.data)

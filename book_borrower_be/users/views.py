@@ -6,8 +6,8 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 
-from .serializers import UserSerializer
-from .models import Users
+from .serializers import RoleSerializer, UserRoleSerializer, UserSerializer
+from .models import Roles, UserRole, Users
 from rest_framework import viewsets
 
 
@@ -88,16 +88,16 @@ class UserViewSet(viewsets.ModelViewSet):
             {"message": "User deleted successfully"}, status=status.HTTP_204_NO_CONTENT
         )
 
-    # custom endpoint ie users/{id}/profile/
+    # custom endpoint ie users/username/profile/
     @action(detail=True, methods=["get"])
     def profile(
-        self: "UserViewSet", request: Request, pk: Optional[str] = None
+        self: "UserViewSet", request: Request, username: Optional[str] = None
     ) -> Response:
         user = self.get_object()
         return Response(
             {
                 "username": user.username,
-                "phone_number": user.phone_number,
+                "phone_number": str(user.phone_number),
                 "status": "active",
             }
         )
@@ -105,4 +105,14 @@ class UserViewSet(viewsets.ModelViewSet):
     # Get what books are borrowed by a specific user that are due
 
 
-# Create your views here.
+class RoleViewSet(viewsets.ModelViewSet):
+    queryset = Roles.objects.all()
+    serializer_class = RoleSerializer
+    lookup_field = "name"
+    filterset_fields = ["name"]
+
+
+class UserRoleViewSet(viewsets.ModelViewSet):
+    queryset = UserRole.objects.all()
+    serializer_class = UserRoleSerializer
+    filterset_fields = ["user__username", "role__name"]

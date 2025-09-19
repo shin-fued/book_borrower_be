@@ -31,6 +31,7 @@ class BookSerializer(serializers.ModelSerializer):
             "genre",
             "updated_at",
             "slug",
+            "author",
         ]
 
     def create(self: Books, validated_data: Books) -> Books:
