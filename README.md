@@ -11,3 +11,5 @@ run:
     docker compose up -d
     python manage.py migrate
     python manage.py runserver
+for schema generation run:
+     docker run -d -p 8080:8080 -e SWAGGER_JSON=/schema.yml -v ${PWD}/schema.yml:/schema.yml swaggerapi/swagger-ui
