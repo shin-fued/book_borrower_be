@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     "phonenumber_field",
     "base_models",
     "permissions",
+    "analytics",
+    "rest_framework",
+    "django_filters",
     "drf_spectacular",
 ]
 

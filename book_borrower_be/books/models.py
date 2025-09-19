@@ -21,10 +21,11 @@ class CategoryPrice(models.Model):
     category = models.CharField(
         max_length=20,
         choices=CategoriesType.choices,
+        unique=True,
     )
     price_per_day = models.DecimalField(
         max_digits=6, decimal_places=2, validators=[MinValueValidator(0.0)]
-    )  # e.g., 1.00 for standard, 1.50 for premium
+    )
 
 
 class Genre(models.Model):
@@ -78,4 +79,6 @@ class BooksUsersTransactions(BaseModel):
         choices=TransactionTypes.choices,
     )
     transaction_cost = models.DecimalField(max_digits=6, decimal_places=2)
-    # no need resolved
+
+    class Meta:
+        ordering = ["-created_at"]
