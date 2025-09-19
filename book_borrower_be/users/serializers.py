@@ -3,10 +3,8 @@ from .models import Roles, UserRole, Users
 
 
 class UserSerializer(serializers.ModelSerializer):
-    roles = serializers.ListField(
-        child=serializers.CharField(),
-        required=True,
-    )
+    # Change this to SerializerMethodField for reading
+    roles = serializers.SerializerMethodField()
 
     class Meta:
         model = Users
@@ -14,8 +12,24 @@ class UserSerializer(serializers.ModelSerializer):
 
     lookup_field = "username"
 
+    def get_roles(self: "UserSerializer", obj: Users) -> list[dict[str, any]]:
+        # get all roles for this user via the join table
+        user_roles = UserRole.objects.filter(user_id=obj.id)
+        roles = [ur.role for ur in user_roles]
+        return RoleSerializer(roles, many=True).data
+
+    def to_internal_value(self: "UserSerializer", data: object) -> dict[str, any]:
+        # Handle roles input during create/update
+        if "roles" in data:
+            # Store roles for later processing in create/update methods
+            self._roles_data = data.pop("roles", [])
+        else:
+            self._roles_data = []
+        return super().to_internal_value(data)
+
     def create(self: "UserSerializer", validated_data: dict[str, any]) -> Users:
-        roles_data = validated_data.pop("roles", [])
+        # Get roles from the stored data
+        roles_data = getattr(self, "_roles_data", [])
         user = Users.objects.create(**validated_data)
 
         # handle roles
@@ -25,16 +39,12 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
-    def get_roles(self: "UserSerializer", obj: object) -> list[dict[str, any]]:
-        # get all roles for this user via the join table
-        user_roles = UserRole.objects.filter(user=obj)
-        roles = [ur.role for ur in user_roles]
-        return RoleSerializer(roles, many=True).data
-
     def update(
-        self: "UserSerializer", instance: object, validated_data: dict[str, any]
+        self: "UserSerializer", instance: Users, validated_data: dict[str, any]
     ) -> Users:
-        roles_data = validated_data.pop("roles", None)
+        # Get roles from the stored data
+        roles_data = getattr(self, "_roles_data", None)
+
         instance.username = validated_data.get("username", instance.username)
         instance.phone_number = validated_data.get(
             "phone_number", instance.phone_number

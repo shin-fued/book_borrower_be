@@ -26,7 +26,7 @@ class Roles(BaseModel):
 
 
 class UserRole(BaseModel):
-    user_id = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)
     role = models.ForeignKey(Roles, on_delete=models.CASCADE)
 
     def __str__(self: "UserRole") -> str:
