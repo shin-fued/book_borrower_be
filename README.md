@@ -16,3 +16,7 @@ for schema generation run:
 
     python manage.py spectacular --color --file schema.yml
     docker run -d -p 8080:8080 -e SWAGGER_JSON=/schema.yml -v ${PWD}/schema.yml:/schema.yml swaggerapi/swagger-ui
+
+cleaning pycache in case of hangup:
+
+    find . -name "__pycache__" -type d -exec rm -rf {} + && find . -name "*.pyc" -type f -delete
