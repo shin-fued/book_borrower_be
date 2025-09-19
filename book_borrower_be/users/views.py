@@ -17,10 +17,7 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = "username"
 
     def create(
-        self: "UserViewSet",
-        request: Request,
-        *args: Tuple[Any, ...],
-        **kwargs: Dict[str, Any]
+        self: "UserViewSet", request: Request, *args: object, **kwargs: object
     ) -> Response:
         serializer = self.get_serializer(data=request.data)
         try:
@@ -45,30 +42,21 @@ class UserViewSet(viewsets.ModelViewSet):
             )
 
     def list(
-        self: "UserViewSet",
-        request: Request,
-        *args: Tuple[Any, ...],
-        **kwargs: Dict[str, Any]
+        self: "UserViewSet", request: Request, *args: any, **kwargs: any
     ) -> Response:
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response({"count": queryset.count(), "results": serializer.data})
 
     def retrieve(
-        self: "UserViewSet",
-        request: Request,
-        *args: Tuple[Any, ...],
-        **kwargs: Dict[str, Any]
+        self: "UserViewSet", request: Request, *args: object, **kwargs: object
     ) -> Response:
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
     def update(
-        self: "UserViewSet",
-        request: Request,
-        *args: Tuple[Any, ...],
-        **kwargs: Dict[str, Any]
+        self: "UserViewSet", request: Request, *args: object, **kwargs: object
     ) -> Response:
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
@@ -91,10 +79,7 @@ class UserViewSet(viewsets.ModelViewSet):
             )
 
     def destroy(
-        self: "UserViewSet",
-        request: Request,
-        *args: Tuple[Any, ...],
-        **kwargs: Dict[str, Any]
+        self: "UserViewSet", request: Request, *args: object, **kwargs: object
     ) -> Response:
 
         instance = self.get_object()

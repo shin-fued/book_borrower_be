@@ -5,14 +5,23 @@ from django.core.validators import MinValueValidator
 
 from base_models.models import BaseModel
 
-from book_borrower_be import books
-
 
 # Create your models here.
 
 
 class CategoryPrice(models.Model):
-    category = models.CharField(max_length=50)
+    class CategoriesType(models.TextChoices):
+        MANGA = "manga", "Manga"
+        COMICS = "comics", "Comics"
+        NON_FICTION = "non-fiction", "Non-Fiction"
+        EDUCATIONAL = "educational", "Educational"
+        MAGAZINE = "magazine", "Magazine"
+        NOVEL = "novel", "Novel"
+
+    category = models.CharField(
+        max_length=20,
+        choices=CategoriesType.choices,
+    )
     price_per_day = models.DecimalField(
         max_digits=6, decimal_places=2, validators=[MinValueValidator(0.0)]
     )  # e.g., 1.00 for standard, 1.50 for premium
@@ -31,7 +40,7 @@ class Books(BaseModel):
     category = models.ForeignKey(CategoryPrice, on_delete=models.CASCADE)
     volume = models.IntegerField(default=1)
 
-    def save(self: books, *args: any, **kwargs: any) -> None:
+    def save(self: "Books", *args: object, **kwargs: object) -> None:
         if not self.slug:  # only create slug on first save
             base_slug = f"{slugify(self.title)}-v{self.volume}"
             slug = base_slug
@@ -64,6 +73,9 @@ class BooksUsersTransactions(BaseModel):
     user = models.ForeignKey(
         Users, on_delete=models.DO_NOTHING, related_name="transactions"
     )
-    transaction_type = models.transactionTypes.choices
+    transaction_type = models.CharField(
+        max_length=10,
+        choices=TransactionTypes.choices,
+    )
     transaction_cost = models.DecimalField(max_digits=6, decimal_places=2)
     # no need resolved

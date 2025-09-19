@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.forms import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -70,7 +71,7 @@ class CategoryPriceSerializer(serializers.ModelSerializer):
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
-        fields = ["id", "genre"]
+        fields = ["id", "name"]
 
 
 class GenreBookSerializer(serializers.ModelSerializer):
@@ -120,33 +121,39 @@ class BookOrderSerializer(serializers.Serializer):
         days_dued = int(days_dued) - 1
         return price * days_dued
 
-    # one loop to both validate and get price
     def validate_books(
-        self: "BookOrderSerializer", books_data: list[dict[str, any]]
-    ) -> list[dict[str, any]]:
+        self: "BookOrderSerializer", books_data: list[dict]
+    ) -> list[dict]:
         if not books_data:
             raise serializers.ValidationError("At least one book must be provided.")
-        return books_data
+
+        validated_books = []
+        for book_dict in books_data:
+            book_serializer = BookOrderItemSerializer(data=book_dict)
+            book_serializer.is_valid(raise_exception=True)  # validate this single book
+            validated_books.append(book_serializer.validated_data)
+
+        return validated_books
 
     def create(
         self: "BookOrderSerializer", validated_data: dict[str, any]
     ) -> dict[str, any]:
+        validated_books = validated_data["books"]
         username: str = validated_data["username"]
         user: Users = get_object_or_404(Users, username=username)
         transaction_type: str = self.context.get("transaction_type", "borrow")
 
-        books_data: list[dict[str, any]] = validated_data["books"]
         transactions: list[BooksUsersTransactions] = []
-        total_cost: float = 0.0
+        total_cost = Decimal("0.0")
 
         transaction_pricing = (
             self.return_pricing if transaction_type == "return" else self.borrow_pricing
         )
 
-        for book_data in books_data:
+        for book_data in validated_books:
             book_id: int = book_data["book_id"]
             book: Books = get_object_or_404(Books, pk=book_id)
-            price: float = transaction_pricing(book, user.id)
+            price = transaction_pricing(book, user.id)
 
             txn: BooksUsersTransactions = BooksUsersTransactions.objects.create(
                 book_id=book_id,

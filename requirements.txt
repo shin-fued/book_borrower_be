@@ -2,10 +2,12 @@ asgiref==3.9.1
 cfgv==3.4.0
 distlib==0.4.0
 Django==5.2.6
+django-phonenumber-field==8.1.0
 djangorestframework==3.16.1
 filelock==3.19.1
 identify==2.6.14
 nodeenv==1.9.1
+phonenumbers==9.0.14
 platformdirs==4.4.0
 pre_commit==4.3.0
 psycopg2-binary==2.9.10
